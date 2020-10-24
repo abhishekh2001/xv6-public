@@ -88,8 +88,13 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->ctime = ticks;  // TODO: initialize start time
+  p->rtime = 0;      // Default
+  p->etime = 0;      // Default
 
   release(&ptable.lock);
+
+  cprintf("Created pid = %d at ctime = %d\n", p->pid, p->ctime);
 
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -123,7 +128,9 @@ userinit(void)
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
+  cprintf("Before callin allocproc\n");
   p = allocproc();
+  cprintf("After\n");
   
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
@@ -248,6 +255,10 @@ exit(void)
   curproc->cwd = 0;
 
   acquire(&ptable.lock);
+
+  curproc->etime = ticks;
+
+  cprintf("proc pid = %d exits at etime = %d\n", curproc->pid, curproc->etime);
 
   // Parent might be sleeping in wait().
   wakeup1(curproc->parent);
