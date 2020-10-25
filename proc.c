@@ -348,14 +348,10 @@ waitx(int* wtime, int* rtime)
         pid = p->pid;
 
         /* update param fields */
-        uint w_time = p->etime - p->rtime - p->ctime;
-        uint r_time = p->rtime;
-        if (wtime)
-          *wtime = w_time;
-        if (rtime)
-          *rtime = r_time;
-        cprintf("Proc pid = %d: rtime = %d, wtime = %d\n",
-          p->pid, w_time, r_time);
+        *rtime = p->rtime;
+        *wtime = p->etime - p->rtime - p->ctime;
+        
+        cprintf("(waitx) r = %d\n", *rtime);
 
         kfree(p->kstack);
         p->kstack = 0;

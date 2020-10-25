@@ -53,6 +53,11 @@ trap(struct trapframe *tf)
       ticks++;
       wakeup(&ticks);
       release(&tickslock);
+
+      if (myproc() && myproc()->state == RUNNING){
+        myproc()->rtime++;
+        cprintf("Update...");
+      }
     }
     lapiceoi();
     break;
@@ -104,7 +109,6 @@ trap(struct trapframe *tf)
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER){
-    myproc()->rtime++;
     yield();
   }
 
