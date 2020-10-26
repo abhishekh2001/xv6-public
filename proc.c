@@ -91,6 +91,8 @@ found:
   p->ctime = ticks;  // Initialize start time
   p->rtime = 0;      // Default
   p->etime = 0;      // Default
+  p->n_run = 0;
+  p->priority = 0;
 
   release(&ptable.lock);
 
@@ -411,6 +413,7 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      p->n_run++;
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -603,4 +606,35 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+
+int
+ps(void)
+{
+
+  struct proc *p;
+  sti();
+  int c_ticks = ticks;
+  cprintf("pid\tPriority\tState\tr_time\tw_time\tn_run\tcur_q\tq0\tq1\tq2\tq3\tq4\n");
+
+  acquire(&ptable.lock);
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if (p->state == UNUSED)
+      continue;
+    static char *states[] = {
+      [UNUSED]    "unused",
+      [EMBRYO]    "embryo",
+      [SLEEPING]  "sleep ",
+      [RUNNABLE]  "runble",
+      [RUNNING]   "run   ",
+      [ZOMBIE]    "zombie"
+    };
+    cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t\n",
+      p->pid, p->priority, states[p->state], p->rtime,
+      c_ticks-p->rtime-p->ctime, p->n_run);
+  }
+  release(&ptable.lock);
+
+  return 0;
 }

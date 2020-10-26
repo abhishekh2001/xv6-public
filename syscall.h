@@ -23,3 +23,4 @@
 
 /* mine */
 #define SYS_waitx  22
+#define SYS_ps     23
