@@ -132,6 +132,23 @@ userinit(void)
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
+
+  #ifdef MLFQ
+    cprintf("MLFQ\n");
+  #else
+  #ifdef RR
+    cprintf("RR\n");
+  #else
+  #ifdef PBS
+    cprintf("PBS\n");
+  #else
+  #ifdef FCFS
+    cprintf("FCFS\n");
+  #endif
+  #endif
+  #endif
+  #endif
+
   p = allocproc();
   
   initproc = p;
@@ -348,6 +365,9 @@ waitx(int* wtime, int* rtime)
         /* update param fields */
         *rtime = p->rtime;
         *wtime = p->etime - p->rtime - p->ctime - p->iotime;
+
+        cprintf("etime %d, rtime %d, ctime %d, iotime %d\n",
+          p->etime, p->rtime, p->ctime, p->iotime);
 
         kfree(p->kstack);
         p->kstack = 0;

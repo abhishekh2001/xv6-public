@@ -55,8 +55,9 @@ trap(struct trapframe *tf)
       release(&tickslock);
 
       if(myproc()) {
-        if(myproc()->state == RUNNING)
+        if(myproc()->state == RUNNING){
           myproc()->rtime++;
+        }
         else if(myproc()->state == SLEEPING)
           myproc()->iotime++;
       }
