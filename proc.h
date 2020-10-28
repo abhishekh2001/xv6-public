@@ -53,6 +53,7 @@ struct proc {
   int ctime;                   // Creation time
   int etime;                   // End time
   int rtime;                   // Run time
+  int iotime;                  // Time in IO
 
   int priority;                // Scheduling
   int n_run;                   // # of sched pick ups

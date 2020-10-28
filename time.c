@@ -8,7 +8,7 @@ int main(int argc, char** argv)
   int ch = fork();
 
   if (ch > 0){  /* parent */
-      int w = 10, r;
+      int w, r;
       ch = waitx(&w, &r);
 
       printf(1, "child pid = %d\n", ch);

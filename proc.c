@@ -88,15 +88,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->ctime = ticks;  // Initialize start time
-  p->rtime = 0;      // Default
-  p->etime = 0;      // Default
-  p->n_run = 0;
-  p->priority = 0;
 
   release(&ptable.lock);
-
-  cprintf("Created pid = %d at ctime = %d\n", p->pid, p->ctime);
 
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -119,6 +112,15 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+
+  p->ctime = ticks;  // Initialize start time
+  p->rtime = 0;      // Default
+  p->etime = 0;      // Default
+  p->iotime = 0;
+
+  p->n_run = 0;
+  p->priority = 0;
+
   return p;
 }
 
@@ -130,9 +132,7 @@ userinit(void)
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
-  cprintf("Before callin allocproc\n");
   p = allocproc();
-  cprintf("After\n");
   
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
@@ -258,9 +258,6 @@ exit(void)
 
   acquire(&ptable.lock);
 
-  // Update exit time of proc
-  curproc->etime = ticks;
-
   // Parent might be sleeping in wait().
   wakeup1(curproc->parent);
 
@@ -276,9 +273,8 @@ exit(void)
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
 
-  cprintf("proc pid = %d exits at etime = %d\n", 
-    curproc->pid, curproc->etime);
-  
+  // Update exit time of proc
+  curproc->etime = ticks;
   sched();
   panic("zombie exit");
 }
@@ -351,9 +347,7 @@ waitx(int* wtime, int* rtime)
 
         /* update param fields */
         *rtime = p->rtime;
-        *wtime = p->etime - p->rtime - p->ctime;
-        
-        cprintf("(waitx) r = %d\n", *rtime);
+        *wtime = p->etime - p->rtime - p->ctime - p->iotime;
 
         kfree(p->kstack);
         p->kstack = 0;
