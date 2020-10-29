@@ -8,8 +8,8 @@ int main(int argc, char** argv)
   int ch = fork();
 
   if (ch > 0){  /* parent */
-    wait();
-    printf(1, "Done parent\n");
+    // wait();
+    printf(1, "Done parent (child=%d)\n", ch);
     exit();
   } else if(ch == 0){  /* child */
     sleep(300);
