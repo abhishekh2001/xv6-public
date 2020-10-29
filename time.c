@@ -8,8 +8,8 @@ int main(int argc, char** argv)
   int ch = fork();
 
   if (ch > 0){  /* parent */
-      int w, r;
-      ch = waitx(&w, &r);
+      int w = -1, r = -1;
+      // ch = waitx(&w, &r);
 
       printf(1, "child pid = %d\n", ch);
       printf(1, "wait time = %d\n", w);
@@ -20,7 +20,13 @@ int main(int argc, char** argv)
         printf(2, "(time): %s failed", argv[1]);
         exit();
       }
+    } else {
+      int x;
+      for (int i = 0; i < 1000000; i++)
+        for (int l = 0; l < 10000000; l++)
+          x = x ^ 1;
     }
+    sleep(1200);
     exit();
   } else {
       printf(2, "fork failed\n");

@@ -2,5 +2,6 @@
     "files.associations": {
         "limits": "c",
         "TEMP_TEST.C": "cpp"
-    }
+    },
+    "C_Cpp.dimInactiveRegions": false
 }

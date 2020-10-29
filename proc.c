@@ -254,6 +254,7 @@ void
 exit(void)
 {
   struct proc *curproc = myproc();
+  cprintf("Proc pid = %d quitting with %d runs\n", curproc->pid, curproc->n_run);
   struct proc *p;
   int fd;
 
@@ -399,6 +400,44 @@ waitx(int* wtime, int* rtime)
 
 
 
+// void
+// scheduler(void)
+// {
+//   struct proc *p;
+//   struct cpu *c = mycpu();
+//   c->proc = 0;
+  
+//   for(;;){
+//     // Enable interrupts on this processor.
+//     sti();
+
+//     // Loop over process table looking for process to run.
+//     acquire(&ptable.lock);
+//     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+//       if(p->state != RUNNABLE)
+//         continue;
+
+//       // Switch to chosen process.  It is the process's job
+//       // to release ptable.lock and then reacquire it
+//       // before jumping back to us.
+//       c->proc = p;
+//       switchuvm(p);
+//       p->state = RUNNING;
+
+//       swtch(&(c->scheduler), p->context);
+//       switchkvm();
+
+//       // Process is done running for now.
+//       // It should have changed its p->state before coming back.
+//       c->proc = 0;
+//     }
+//     release(&ptable.lock);
+
+//   }
+// }
+
+
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -413,7 +452,7 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -423,6 +462,28 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+
+#ifdef FCFS
+
+    struct proc* p2;
+    p = 0;
+    for (p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
+      if (p2->state != RUNNABLE)
+        continue;
+      if (p2->pid < 2)
+        continue;
+      if (p == 0){
+        p = p2;
+      } else {
+        if (p2->ctime < p->ctime)
+          p = p2;
+      }
+    }
+
+    if (p == 0)
+      p = ptable.proc;
+    
+#endif
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -440,7 +501,6 @@ scheduler(void)
       c->proc = 0;
     }
     release(&ptable.lock);
-
   }
 }
 
