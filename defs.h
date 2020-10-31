@@ -9,6 +9,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+int qtmax[5];  // queue max time slices
 
 // bio.c
 void            binit(void);

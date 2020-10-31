@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
         }
       }
       printf(1, "Process: %d Finished\n", j);
+      // ps();
       exit();
     }
     else{

@@ -14,8 +14,8 @@ struct {
 
 /* queue data structures */
 struct proc* mlfq[5][NPROC+10];
-int qpos[5];   // queue pointers
-int qtmax[5];  // queue max time slices
+int qpos[5] = { -1, -1, -1, -1, -1 };   // queue pointers
+int qtmax[5] = { 1, 2, 4, 8, 16 };
 
 static struct proc *initproc;
 
@@ -35,40 +35,68 @@ pinit(void)
 
 // Returns 1 if process is found in queue
 // Returns 0 otherwise
+
+void
+print_q_status()
+{
+  cprintf("queues:\n");
+  for (int i = 0; i < 5; i++){
+    cprintf("%d: ", i);
+    for (int j = 0; j <= qpos[i]; j++){
+      cprintf("%d ", mlfq[i][j]->pid);
+    }
+    cprintf("\n");
+  }
+}
+
+
 int is_exists(int q, struct proc* el)
 {
   struct proc* p;
-  for (p = mlfq[q]; p < &mlfq[qpos[q]]; p++){
-    if (p->pid == el->pid){
+  for (int i = 0; i <= qpos[q]; i++){
+    p = mlfq[q][i];
+    if (p->pid == el->pid)
       return 1;
-    }
   }
   return 0;
 }
 
 // Standard Queue ADT procedure
-int enqueue(int q, struct proc* el)
+int
+enqueue(int q, struct proc* el)
 {
-  if (is_exists(q, el)){  // proc in queue
-    return -1;
+  // if (is_exists(q, el)){  // proc in queue
+  //   return -1;
+  // }
+  
+  // cprintf("attempt to enqueue pid %d\n", el->pid);
+  for (int i = 0; i <= qpos[q]; i++){
+    if (mlfq[q][i]->pid == el->pid)
+      return -1;
   }
-  el->etime = ticks;
+#ifdef MLD
+  cprintf("success enqueue pid %d to q %d\n", el->pid, q);
+#endif
+
+  el->q_start = ticks;
   el->q = q;
 
   qpos[q]++;
   mlfq[q][qpos[q]] = el;
 
-  return q;
+#ifdef MLD
+  cprintf("q %d el %d\n", q, mlfq[q][qpos[q]]->pid);
+  print_q_status();
+#endif
+
+  return 0;
 }
 
 int remove(int q, struct proc* el)
 {
-  if (!is_exists(q, el)){
-    return -1;
-  }
   int pos = -1;
   struct proc* p;
-  for (int i = 0; i < qpos[q]; i++){
+  for (int i = 0; i <= qpos[q]; i++){
     p = mlfq[q][i];
     if (p->pid == el->pid){
       pos = i;
@@ -76,10 +104,13 @@ int remove(int q, struct proc* el)
     }
   }
 
-  if (pos == -1){  // Should never happen (ig)
+  if (pos == -1){
     return -1;
   }
 
+#ifdef MLD
+  cprintf("Removing pid %d from q %d\n", el->pid, q);
+#endif
   // restructure queue
   for (int i = pos; i < qpos[q]; i++){
     mlfq[q][i] = mlfq[q][i+1];
@@ -244,10 +275,19 @@ found:
 
   p->n_run = 0;
   p->priority = -1;
+  for (int i = 0; i < 5; i++)
+    p->time_in_q[i] = -1;
 
-  #ifdef PBS
+#ifdef PBS
     p->priority = 60;
-  #endif
+#endif
+#ifdef MLFQ
+    p->q = 0;
+    p->q_time = 0;
+    p->q_start = 0;
+    for (int i = 0; i < 5; i++)
+      p->time_in_q[i] = 0;
+#endif
 
   return p;
 }
@@ -303,6 +343,10 @@ userinit(void)
   acquire(&ptable.lock);
 
   p->state = RUNNABLE;
+
+#ifdef MLFQ
+  enqueue(0, p);
+#endif
 
   release(&ptable.lock);
 }
@@ -370,6 +414,10 @@ fork(void)
 
   np->state = RUNNABLE;
 
+#ifdef MLFQ
+  enqueue(0, np);
+#endif
+
   release(&ptable.lock);
 
   return pid;
@@ -384,6 +432,13 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
+
+#ifdef MLD
+  if (curproc){
+    cprintf("pid %d exiting\n", curproc->pid);
+    print_q_status();
+  }
+#endif
 
   // cprintf("pid %d exiting priority %d\n", curproc->pid, curproc->priority);
 
@@ -449,6 +504,10 @@ wait(void)
         kfree(p->kstack);
         p->kstack = 0;
         freevm(p->pgdir);
+
+#ifdef MLFQ
+        remove(p->q, p);
+#endif
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
@@ -502,6 +561,9 @@ waitx(int* wtime, int* rtime)
         kfree(p->kstack);
         p->kstack = 0;
         freevm(p->pgdir);
+#ifdef MLFQ
+        remove(p->q, p);
+#endif
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
@@ -578,7 +640,9 @@ waitx(int* wtime, int* rtime)
 void
 scheduler(void)
 {
+#ifndef MLFQ
   struct proc *p;
+#endif
   struct cpu *c = mycpu();
   c->proc = 0;
 
@@ -659,19 +723,23 @@ scheduler(void)
     }
 #endif
 
+// #define MLFQ
 #ifdef MLFQ
     // age
     for (int q = 1; q < 5; q++){
       struct proc* el;
-      for (el = mlfq[q]; el < &mlfq[q][qpos[q]]; el++){
-        if (ticks - el->etime > 30){
-          move_q(el->q, el->q-1, el);
+      for (int i = 0; i <= qpos[q]; i++){
+        el = mlfq[q][i];
+        if (ticks - el->q_start > 30){  // Promote
+          // cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
+          // move_q(el->q, el->q-1, el);
+          remove(el->q, el);
+          enqueue(el->q-1, el);
         }
       }
     }
     // pick proc
-    struct proc* next_proc = 0;
-    struct proc* p;
+    struct proc* p = 0;
 
     for (int q = 0; q < 5; q++){
       if (qpos[q] >= 0){
@@ -680,11 +748,33 @@ scheduler(void)
         break;
       }
     }
-
-    if (p != 0){
-      next_proc = p;
-    }
+    // print_q_status();
     // exec
+    if (p != 0 && p->state == RUNNABLE){
+      // cprintf("Picked %d\n", p->pid);
+      p->q_time++;
+      p->n_run++;
+      c->proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
+      // cprintf("picked pid %d, ctime %d\n", p->pid, p->ctime);
+
+      swtch(&(c->scheduler), p->context);
+      switchkvm();
+      c->proc = 0;
+
+      if (p != 0 && p->state == RUNNABLE){
+        int currq = p->q;
+        int newq = p->q;
+        // demote if exceeded time slice
+        if (p->q_time >= qtmax[currq] && p->q != 4){
+          newq++;
+          // cprintf("proc %d moved to queue %d\n", p->pid, newq);
+        }
+        p->q_time = 0;
+        enqueue(newq, p);
+      }
+    }
 #endif
 
     release(&ptable.lock);
@@ -796,8 +886,13 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
+    if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
+#ifdef MLFQ
+      p->q_time = 0;
+      enqueue(p->q, p);
+#endif
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -822,8 +917,12 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // Wake process from sleep if necessary.
-      if(p->state == SLEEPING)
+      if(p->state == SLEEPING){
         p->state = RUNNABLE;
+#ifdef MLFQ
+        enqueue(p->q, p);
+#endif
+      }
       release(&ptable.lock);
       return 0;
     }
@@ -891,9 +990,11 @@ ps(void)
       [RUNNING]   "run   ",
       [ZOMBIE]    "zombie"
     };
-    cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t\n",
+    cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
       p->pid, p->priority, states[p->state], p->rtime,
-      c_ticks-p->rtime-p->ctime, p->n_run);
+      c_ticks-p->rtime-p->ctime, p->n_run, p->q,
+      p->time_in_q[0], p->time_in_q[1], p->time_in_q[2],
+      p->time_in_q[3], p->time_in_q[4]);
   }
   release(&ptable.lock);
 

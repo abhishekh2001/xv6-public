@@ -62,6 +62,7 @@ struct proc {
   int q_time;                  // Ticks spent inside mlfq queue
   int q_flag;                  // Shift queue
   int q_start;                 // Tick when proc enters mlfq queue
+  int time_in_q[5];            // Ticks spent in each queue
 };
 
 // Process memory is laid out contiguously, low addresses first:
