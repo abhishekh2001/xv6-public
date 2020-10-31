@@ -27,12 +27,7 @@ int main(int argc, char** argv)
         for (int l = 0; l < 10000000; l++)
           for (int z = 0; z < 100000000; z++)
             p = p ^ 1;
-      long i;
-      int stress = 10;
-      while (1) {
-          for (i = 0; i < (1L << stress); i++) { p = p ^ 1; }
-          sleep(100);
-      }
+      sleep(200);
       ps();
     }
     exit();

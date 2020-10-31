@@ -124,6 +124,7 @@ int             set_priority(int, int);
 void            wakeup(void*);
 void            yield(void);
 int             ps(void);
+int             inc_iotime(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

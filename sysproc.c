@@ -121,3 +121,10 @@ sys_ps(void)
   ps();
   return 0;
 }
+
+int
+sys_inc_iotime(void)
+{
+  inc_iotime();
+  return 0;
+}

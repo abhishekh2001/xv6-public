@@ -58,6 +58,7 @@ trap(struct trapframe *tf)
         if(myproc()->state == RUNNING){
           myproc()->rtime++;
         }
+        
       }
     }
     lapiceoi();
