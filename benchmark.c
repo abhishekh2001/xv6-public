@@ -25,11 +25,11 @@ int main(int argc, char *argv[])
       volatile int i;
       for (volatile int k = 0; k < number_of_processes; k++)
       {
-        // if (k <= j)
-        // {
-        //   sleep(200); //io time
-        // }
-        // else
+        if (k <= j)
+        {
+          sleep(200); //io time
+        }
+        else
         {
           for (i = 0; i < 100000000; i++)
           {

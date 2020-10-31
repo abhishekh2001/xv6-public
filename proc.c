@@ -12,6 +12,11 @@ struct {
   struct proc proc[NPROC];
 } ptable;
 
+/* queue data structures */
+struct proc* mlfq[5][NPROC+10];
+int qpos[5];   // queue pointers
+int qtmax[5];  // queue max time slices
+
 static struct proc *initproc;
 
 int nextpid = 1;
@@ -24,6 +29,90 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+}
+
+/* queue interface functions */
+
+// Returns 1 if process is found in queue
+// Returns 0 otherwise
+int is_exists(int q, struct proc* el)
+{
+  struct proc* p;
+  for (p = mlfq[q]; p < &mlfq[qpos[q]]; p++){
+    if (p->pid == el->pid){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+// Standard Queue ADT procedure
+int enqueue(int q, struct proc* el)
+{
+  if (is_exists(q, el)){  // proc in queue
+    return -1;
+  }
+  el->etime = ticks;
+  el->q = q;
+
+  qpos[q]++;
+  mlfq[q][qpos[q]] = el;
+
+  return q;
+}
+
+int remove(int q, struct proc* el)
+{
+  if (!is_exists(q, el)){
+    return -1;
+  }
+  int pos = -1;
+  struct proc* p;
+  for (int i = 0; i < qpos[q]; i++){
+    p = mlfq[q][i];
+    if (p->pid == el->pid){
+      pos = i;
+      break;
+    }
+  }
+
+  if (pos == -1){  // Should never happen (ig)
+    return -1;
+  }
+
+  // restructure queue
+  for (int i = pos; i < qpos[q]; i++){
+    mlfq[q][i] = mlfq[q][i+1];
+  }
+  qpos[q]--;
+
+  return 0;
+}
+
+int is_empty(int q){
+  return qpos[q] >= 0;
+}
+
+struct proc* dequeue(int q){
+  if (!is_empty(q)){
+    struct proc* p = mlfq[q][0];
+    remove(q, p);
+    return p;
+  }
+  return 0;
+}
+
+/* end queue interface */
+
+/* mlfq functions */
+int move_q(int in, int de, struct proc* el)
+{
+  if (remove(in, el) < 0)
+    return -1;
+  if (enqueue(de, el) < 0)
+    return -1;
+  
+  return 0;
 }
 
 // Must be called with interrupts disabled
@@ -499,6 +588,8 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
+#ifndef MLFQ
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -566,6 +657,36 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+#endif
+
+#ifdef MLFQ
+    // age
+    for (int q = 1; q < 5; q++){
+      struct proc* el;
+      for (el = mlfq[q]; el < &mlfq[q][qpos[q]]; el++){
+        if (ticks - el->etime > 30){
+          move_q(el->q, el->q-1, el);
+        }
+      }
+    }
+    // pick proc
+    struct proc* next_proc = 0;
+    struct proc* p;
+
+    for (int q = 0; q < 5; q++){
+      if (qpos[q] >= 0){
+        p = mlfq[q][0];
+        remove(q, p);
+        break;
+      }
+    }
+
+    if (p != 0){
+      next_proc = p;
+    }
+    // exec
+#endif
+
     release(&ptable.lock);
   }
 }

@@ -57,6 +57,11 @@ struct proc {
 
   int priority;                // Scheduling
   int n_run;                   // # of sched pick ups
+
+  int q;                       // ID of queue that proc is placed in
+  int q_time;                  // Ticks spent inside mlfq queue
+  int q_flag;                  // Shift queue
+  int q_start;                 // Tick when proc enters mlfq queue
 };
 
 // Process memory is laid out contiguously, low addresses first:
