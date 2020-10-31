@@ -7,7 +7,7 @@
 #include "user.h"
 #include "fs.h"
 
-int number_of_processes = 10;
+int number_of_processes = 5;
 
 int main(int argc, char *argv[])
 {

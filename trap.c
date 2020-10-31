@@ -113,11 +113,11 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER){
 #ifdef MLFQ
-  #ifdef MLD
-    cprintf("pid %d, q_time %d, qtmax %d\n", myproc()->pid,
-      myproc()->q_time, qtmax[myproc()->q]);
-  #endif
     if (myproc()->q_time >= qtmax[myproc()->q]){  // Exceeded io time
+      myproc()->time_in_q[myproc()->q]++;
+  #ifdef PLOT
+      cprintf("\nPLOT %d %d %d\n", myproc()->pid, myproc()->q, ticks);
+  #endif
       yield();
     } else {
       myproc()->q_time++;

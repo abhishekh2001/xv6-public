@@ -194,7 +194,7 @@ set_priority(int new_priority, int pid)
 
   struct proc* p;
   int found = 0;
-  int old_priority;
+  int old_priority = -1;
 
   // Find the process with pid pid
   acquire(&ptable.lock);
@@ -214,8 +214,9 @@ set_priority(int new_priority, int pid)
   if (!found)
     return -1;
 
-  if (new_priority < old_priority)
+  if (new_priority < old_priority){
     yield();
+  }
 
   return old_priority;
 }
@@ -275,6 +276,7 @@ found:
 
   p->n_run = 0;
   p->priority = -1;
+  p->q = -1;
   for (int i = 0; i < 5; i++)
     p->time_in_q[i] = -1;
 
@@ -733,6 +735,9 @@ scheduler(void)
         if (ticks - el->q_start > 30){  // Promote
           // cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
           // move_q(el->q, el->q-1, el);
+#ifdef PLOT
+          cprintf("\nPLOT %d %d %d\n", el->pid, el->q, ticks);
+#endif
           remove(el->q, el);
           enqueue(el->q-1, el);
         }
@@ -768,6 +773,9 @@ scheduler(void)
         int newq = p->q;
         // demote if exceeded time slice
         if (p->q_time >= qtmax[currq] && p->q != 4){
+// #ifdef PLOT
+//           cprintf("\nPLOT %d %d %d\n", p->pid, p->q+1, ticks);
+// #endif
           newq++;
           // cprintf("proc %d moved to queue %d\n", p->pid, newq);
         }
