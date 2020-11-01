@@ -25,7 +25,6 @@ int main(int argc, char** argv)
       int p;
       for (int i = 0; i < 1000000; i++)
         for (int l = 0; l < 10000000; l++)
-          for (int z = 0; z < 100000000; z++)
             p = p ^ 1;
       sleep(200);
       ps();

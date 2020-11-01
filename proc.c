@@ -435,14 +435,7 @@ exit(void)
   struct proc *p;
   int fd;
 
-#ifdef MLD
-  if (curproc){
-    cprintf("pid %d exiting\n", curproc->pid);
-    print_q_status();
-  }
-#endif
-
-  // cprintf("pid %d exiting priority %d\n", curproc->pid, curproc->priority);
+  cprintf("pid %d exiting wtime=%d\n", curproc->pid, curproc->iotime);
 
   if(curproc == initproc)
     panic("init exiting");
@@ -556,6 +549,7 @@ waitx(int* wtime, int* rtime)
         /* update param fields */
         *rtime = p->rtime;
         *wtime = p->etime - p->rtime - p->ctime - p->iotime;
+        *wtime = p->iotime;
 
         cprintf("etime %d, rtime %d, ctime %d, iotime %d\n",
           p->etime, p->rtime, p->ctime, p->iotime);
@@ -1014,7 +1008,7 @@ inc_iotime()
 {
   struct proc* p;
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if (p->state == SLEEPING)
+    if (p->state == RUNNABLE)
       p->iotime++;
   }
   return 0;

@@ -7,7 +7,7 @@
 #include "user.h"
 #include "fs.h"
 
-int number_of_processes = 5;
+int number_of_processes = 10;
 
 int main(int argc, char *argv[])
 {
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         }
       }
       printf(1, "Process: %d Finished\n", j);
-      // ps();
+      ps();
       exit();
     }
     else{
