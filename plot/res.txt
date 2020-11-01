@@ -153,124 +153,586 @@ cpu0: starting 0
 sb: size 1000 nblocks 941 ninodes 200 nlog 30 logstart 2 inodestart 32 bmap start 58
 
 PLOT 1 0 2
-init: starting sh
-
-PLOT 1 1 8
+init: s
+PLOT 1 1 7
+tarting sh
 
 PLOT 2 0 9
 $ benchmark
 
-PLOT 3 0 349
+PLOT 3 0 405
 
-PLOT 4 0 549
+PLOT 3 1 406
 
-PLOT 4 1 551
+PLOT 4 0 604
 
-PLOT 4 2 555
+PLOT 4 1 606
 
-PLOT 4 3 563
+PLOT 4 2 610
 
-PLOT 4 4 579
+PLOT 4 3 618
 
-PLOT 4 4 595
+PLOT 4 4 634
 
-PLOT 4 4 611
+PLOT 4 4 650
 
-PLOT 4 4 627
+PLOT 4 4 666
 
-PLOT 4 4 643
+PLOT 4 4 682
 
-PLOT 4 4 659
+PLOT 4 4 698
 
-PLOT 4 4 675
+PLOT 4 4 714
 
-PLOT 4 4 691
+PLOT 4 4 730
 
-PLOT 4 4 707
+PLOT 4 4 746
 
-PLOT 4 4 723
+PLOT 4 4 762
 
-PLOT 4 4 739
+PLOT 4 4 778
 
-PLOT 5 0 750
+PLOT 4 4 794
 
-PLOT 5 1 752
+PLOT 5 0 805
 
-PLOT 4 4 755
+PLOT 5 1 807
 
-PLOT 5 2 756
+PLOT 4 4 810
 
-PLOT 5 3 764
+PLOT 5 2 811
 
-PLOT 4 4 771
+PLOT 5 3 819
 
-PLOT 5 4 780
+PLOT 4 4 826
 
-PLOT 4 4 787
+PLOT 5 4 835
 
-PLOT 5 4 796
+PLOT 4 4 842
 
-PLOT 4 4 803
+PLOT 5 4 851
+
+PLOT 4 4 858
+
+PLOT 5 4 867
+
+PLOT 4 4 874
+
+PLOT 5 4 883
+
+PLOT 4 4 890
+
+PLOT 5 4 899
+
+PLOT 4 4 906
+
+PLOT 5 4 915
+
+PLOT 4 4 922
+
+PLOT 5 4 931
+
+PLOT 4 4 938
+
+PLOT 5 4 947
+
+PLOT 4 4 954
+
+PLOT 5 4 963
+
+PLOT 4 4 970
+
+PLOT 5 4 979
+
+PLOT 4 4 986
+
+PLOT 5 4 995
+
+PLOT 4 4 1002
+
+PLOT 5 4 1011
+
+PLOT 6 0 1012
+
+PLOT 6 1 1014
+
+PLOT 4 4 1018
+
+PLOT 6 2 1018
+
+PLOT 6 3 1026
+
+PLOT 5 4 1034
+
+PLOT 4 4 1042
+
+PLOT 6 4 1050
+
+PLOT 5 4 1058
+
+PLOT 4 4 1066
+
+PLOT 6 4 1074
+
+PLOT 5 4 1082
+
+PLOT 4 4 1090
+
+PLOT 6 4 1098
+
+PLOT 5 4 1106
+
+PLOT 4 4 1114
+
+PLOT 6 4 1122
+
+PLOT 5 4 1130
+
+PLOT 4 4 1138
+
+PLOT 6 4 1146
+
+PLOT 5 4 1154
+
+PLOT 4 4 1162
+
+PLOT 6 4 1170
+
+PLOT 5 4 1178
+
+PLOT 4 4 1186
+
+PLOT 6 4 1194
+
+PLOT 5 4 1202
+
+PLOT 4 4 1210
+
+PLOT 6 4 1218
+
+PLOT 7 0 1219
+
+PLOT 7 1 1221
+
+PLOT 7 2 1225
+
+PLOT 5 4 1226
+
+PLOT 7 3 1233
+
+PLOT 4 4 1242
+
+PLOT 6 4 1249
+
+PLOT 5 4 1258
+
+PLOT 7 4 1265
+
+PLOT 4 4 1274
+
+PLOT 6 4 1281
+
+PLOT 5 4 1290
+
+PLOT 7 4 1297
+
+PLOT 4 4 1306
+
+PLOT 6 4 1313
+
+PLOT 5 4 1322
+
+PLOT 7 4 1329
+
+PLOT 4 4 1338
+
+PLOT 6 4 1345
+
+PLOT 5 4 1354
+
+PLOT 7 4 1361
+
+PLOT 4 4 1370
+
+PLOT 6 4 1377
+
+PLOT 5 4 1386
+
+PLOT 7 4 1393
+
+PLOT 4 4 1402
+
+PLOT 6 4 1409
+
+PLOT 5 4 1418
+
+PLOT 7 4 1425
+
+PLOT 8 0 1426
+
+PLOT 8 1 1428
+
+PLOT 8 2 1432
+
+PLOT 4 4 1434
+
+PLOT 8 3 1440
+
+PLOT 6 4 1450
+
+PLOT 5 4 1456
+
+PLOT 7 4 1466
+PROMOTE PID(8) from 4 to 3
+
+PLOT 8 4 1466
+
+PLOT 4 4 1472
+
+PLOT 8 3 1474
+
+PLOT 6 4 1488
+
+PLOT 5 4 1490
 Process: 0 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	1493	24	2	1	5	2	0	0
+2	-1		sleep 	2	1490	17	1	1	2	0	0	0
+3	-1		sleep 	4	1093	9	2	1	2	3	0	0
+4	80		run   	499	596	246	4	1	2	4	8	665
+5	79		runble	192	903	433	4	1	2	4	8	464
+6	78		runble	80	1014	448	4	1	2	4	8	256
+7	77		run   	16	1078	467	4	1	2	4	8	123
+8	76		runble	8	1086	487	4	1	2	4	16	0
+9	75		runble	0	1093	493	0	0	0	0	0	0
+10	74		runble	0	1092	493	0	0	0	0	0	0
+11	73		runble	0	1092	492	0	0	0	0	0	0
+12	72		runble	0	1091	492	0	0	0	0	0	0
+13	71		runble	0	1091	491	0	0	0	0	0	0
+PROMOTE PID(8) from 4 to 3
 
-PLOT 5 4 812
+PLOT 8 4 1500
 
-PLOT 5 4 828
+PLOT 9 0 1501
 
-PLOT 5 4 844
+PLOT 7 4 1504
 
-PLOT 5 4 860
+PLOT 8 3 1509
 
-PLOT 5 4 876
+PLOT 6 4 1520
 
-PLOT 5 4 892
+PLOT 5 4 1525
 
-PLOT 5 4 908
+PLOT 7 4 1536
 
-PLOT 5 4 924
+PLOT 8 4 1541
 
-PLOT 5 4 940
+PLOT 6 4 1552
 
-PLOT 6 0 950
+PLOT 5 4 1557
+
+PLOT 7 4 1568
+
+PLOT 8 4 1573
+
+PLOT 6 4 1584
+
+PLOT 5 4 1589
+
+PLOT 7 4 1600
+
+PLOT 8 4 1605
+
+PLOT 6 4 1616
+
+PLOT 5 4 1621
+
+PLOT 7 4 1632
+
+PLOT 9 1 1634
+
+PLOT 8 4 1637
+
+PLOT 9 2 1638
+
+PLOT 9 3 1646
+
+PLOT 6 4 1653
+
+PLOT 5 4 1662
+
+PLOT 7 4 1669
+
+PLOT 8 4 1678
+
+PLOT 9 4 1685
+
+PLOT 6 4 1694
+
+PLOT 5 4 1701
+
+PLOT 7 4 1710
+
+PLOT 8 4 1717
+
+PLOT 9 4 1726
+
+PLOT 6 4 1733
 Process: 1 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	1735	24	2	1	5	2	0	0
+2	-1		sleep 	2	1732	17	1	1	2	0	0	0
+3	-1		sleep 	4	1335	10	2	1	2	3	0	0
+5	79		run   	272	1065	440	4	1	2	4	8	575
+6	78		runble	112	1224	455	4	1	2	4	8	368
+7	77		run   	40	1296	474	4	1	2	4	8	232
+8	76		runble	96	1240	494	4	1	2	4	24	96
+9	75		runble	17	1318	516	4	1	2	4	8	32
+10	74		runble	0	1334	526	0	0	0	0	0	0
+11	73		runble	0	1334	525	0	0	0	0	0	0
+12	72		runble	0	1333	525	0	0	0	0	0	0
+13	71		runble	0	1333	524	0	0	0	0	0	0
 
-PLOT 6 1 952
+PLOT 5 4 1742
+PROMOTE PID(8) from 4 to 3
 
-PLOT 6 2 956
+PLOT 8 4 1744
 
-PLOT 6 3 964
+PLOT 10 0 1744
 
-PLOT 6 4 980
+PLOT 7 4 1749
 
-PLOT 6 4 996
+PLOT 8 3 1752
 
-PLOT 6 4 1012
+PLOT 9 4 1765
 
-PLOT 6 4 1028
+PLOT 6 4 1768
 
-PLOT 6 4 1044
+PLOT 7 4 1781
 
-PLOT 6 4 1060
+PLOT 8 4 1784
 
-PLOT 6 4 1076
+PLOT 9 4 1797
+
+PLOT 6 4 1800
+
+PLOT 7 4 1813
+
+PLOT 8 4 1816
+
+PLOT 9 4 1829
+
+PLOT 6 4 1832
+
+PLOT 10 1 1834
+
+PLOT 10 2 1838
+
+PLOT 7 4 1845
+PROMOTE PID(8) from 4 to 3
+
+PLOT 8 4 1845
+
+PLOT 10 3 1846
+
+PLOT 8 3 1853
+
+PLOT 9 4 1862
+
+PLOT 6 4 1869
+
+PLOT 7 4 1878
+
+PLOT 10 4 1885
+
+PLOT 8 4 1894
+
+PLOT 9 4 1901
+
+PLOT 6 4 1910
+
+PLOT 7 4 1917
+
+PLOT 10 4 1926
+
+PLOT 8 4 1933
+
+PLOT 9 4 1942
+
+PLOT 6 4 1949
+
+PLOT 7 4 1958
+
+PLOT 10 4 1965
+
+PLOT 8 4 1974
+
+PLOT 9 4 1981
 Process: 2 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
 
-PLOT 7 0 1150
+PLOT 6 4 1990
 
-PLOT 7 1 1152
+PLOT 7 4 1997
 
-PLOT 7 2 1156
+PLOT 10 4 2006
 
-PLOT 7 3 1164
+PLOT 8 4 2013
+1	-1		sleep 	6	1984	24	2	1	5	2	0	0
+2	-1		sleep 	2	1981	17	1	1	2	0	0	0
+3	-1		sleep 	4	1584	11	2	1	2	3	0	0
+6	78		run   	144	1441	463	4	1	2	4	8	480
+7	77		runble	128	1457	481	4	1	2	4	8	352
+8	76		runble	136	1449	502	4	1	2	4	40	192
+9	75		run   	97	1487	524	4	1	2	4	8	151
+10	74		runble	32	1551	546	4	1	2	4	8	64
+11	73		sleep 	0	1583	563	0	0	0	0	0	0
+12	72		sleep 	0	1582	563	0	0	0	0	0	0
+13	71		sleep 	0	1582	562	0	0	0	0	0	0
 
-PLOT 7 4 1180
+PLOT 9 4 2022
 
-PLOT 7 4 1196
+PLOT 7 4 2030
 
-PLOT 7 4 1212
+PLOT 10 4 2038
+
+PLOT 11 0 2039
+
+PLOT 11 1 2041
+
+PLOT 11 2 2045
+
+PLOT 8 4 2046
+
+PLOT 11 3 2053
+
+PLOT 9 4 2062
+
+PLOT 7 4 2069
+
+PLOT 10 4 2078
+
+PLOT 8 4 2085
+
+PLOT 11 4 2094
 Process: 3 Finished
-Process:
-PLOT 8 0 1352
- 4 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2094	24	2	1	5	2	0	0
+2	-1		sleep 	2	2091	17	1	1	2	0	0	0
+3	-1		sleep 	4	1694	12	2	1	2	3	0	0
+7	77		run   	150	1545	484	4	1	2	4	8	390
+8	76		runble	152	1543	504	4	1	2	4	40	224
+9	75		run   	113	1581	526	4	1	2	4	8	191
+10	74		runble	48	1645	548	4	1	2	4	8	96
+
+PLOT 9 4 2100
+11	73		runble	16	1677	571	4	1	2	4	8	16
+12	72		runble	0	1692	576	0	0	0	0	0	0
+13	71		runble	0	1692	575	0	0	0	0	0	0
+
+PLOT 8 4 2117
+
+PLOT 10 4 2117
+
+PLOT 11 4 2133
+
+PLOT 9 4 2133
+
+PLOT 8 4 2149
+
+PLOT 10 4 2149
+
+PLOT 11 4 2165
+
+PLOT 9 4 2165
+
+PLOT 8 4 2181
+
+PLOT 10 4 2181
+
+PLOT 11 4 2197
+
+PLOT 9 4 2197
+
+PLOT 8 4 2213
+
+PLOT 10 4 2213
+Process: 5 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2221	24	2	1	5	2	0	0
+2	-1		sleep 	2	2218	17	1	1	2	0	0	0
+3	-1		sleep 	4	1821	13	2	1	2	3	0	0
+8	76		runble	216	1606	508	4	1	2	4	40	288
+9	75		run   	113	1708	530	4	1	2	4	8	254
+10	74		runble	48	1772	552	4	1	2	4	8	160
+11	73		run   	78	1742	575	4	1	2	4	8	78
+12	72		runble	0	1819	584	0	0	0	0	0	0
+13	71		runble	0	1819	583	0	0	0	0	0	0
+
+PLOT 11 4 2229
+Process: 4 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2226	24	2	1	5	2	0	0
+2	-1		sleep 	2	2223	17	1	1	2	0	0	0
+3	-1		sleep 	4	1826	14	2	1	2	3	0	0
+8	76		run   	216	1611	509	4	1	2	4	40	292
+10	74		run   	51	1774	553	4	1	2	4	8	163
+11	73		runble	80	1745	575	4	1	2	4	8	80
+12	72		runble	0	1824	586	0	0	0	0	0	0
+13	71		runble	0	1824	585	0	0	0	0	0	0
+
+PLOT 10 4 2245
+
+PLOT 12 0 2246
+
+PLOT 12 1 2248
+
+PLOT 11 4 2249
+
+PLOT 12 2 2252
+
+PLOT 12 3 2260
+Process: 6 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2256	24	2	1	5	2	0	0
+2	-1		sleep 	2	2253	17	1	1	2	0	0	0
+3	-1		sleep 	4	1856	15	2	1	2	3	0	0
+10	74		run   	64	1791	554	4	1	2	4	8	189
+11	73		run   	82	1773	577	4	1	2	4	8	98
+12	72		runble	15	1839	591	4	1	2	4	8	0
+13	71		runble	0	1854	591	0	0	0	0	0	0
+
+PLOT 11 4 2276
+
+PLOT 12 4 2279
+Process: 7 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2278	24	2	1	5	2	0	0
+2	-1		sleep 	2	2275	17	1	1	2	0	0	0
+3	-1		sleep 	4	1878	16	2	1	2	4	0	0
+11	73		run   	104	1773	578	4	1	2	4	8	120
+12	72		run   	15	1861	593	4	1	2	4	8	21
+13	71		runble	0	1876	594	0	0	0	0	0	0
+
+PLOT 12 4 2295
+
+PLOT 12 4 2311
+Process: 8 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2316	24	2	1	5	2	0	0
+2	-1		sleep 	2	2313	17	1	1	2	0	0	0
+3	-1		sleep 	4	1916	17	2	1	2	4	0	0
+12	72		run   	31	1883	595	4	1	2	4	8	59
+13	71		sleep 	0	1914	632	0	0	0	0	0	0
+Proc
+PLOT 13 0 2446
+ess: 9 Finished
+pid	Priority	State	r_time	w_time	n_run	cur_q	q0	q1	q2	q3	q4
+1	-1		sleep 	6	2441	24	2	1	5	2	0	0
+2	-1		sleep 	2	2438	17	1	1	2	0	0	0
+3	-1		sleep 	4	2041	18	2	1	2	4	0	0
+13	71		run   	1	2038	757	1	1	1	0	0	0
+
+PLOT 13 1 2448
 $ QEMU: Terminated
 

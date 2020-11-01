@@ -54,6 +54,11 @@ trap(struct trapframe *tf)
       wakeup(&ticks);
       release(&tickslock);
 
+      if(myproc()) {
+        if(myproc()->state == RUNNING){
+          myproc()->rtime++;
+        }
+      }
       inc_iotime();
     }
     lapiceoi();
@@ -107,7 +112,7 @@ trap(struct trapframe *tf)
 
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER){
-       myproc()->rtime++;
+      //  myproc()->rtime++;
 #ifdef MLFQ
     if (myproc()->q_time >= qtmax[myproc()->q]){  // Exceeded io time
       // myproc()->q_time++;

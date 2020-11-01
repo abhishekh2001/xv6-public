@@ -435,7 +435,7 @@ exit(void)
   struct proc *p;
   int fd;
 
-  cprintf("pid %d exiting wtime=%d\n", curproc->pid, curproc->iotime);
+  // cprintf("pid %d exiting wtime=%d\n", curproc->pid, curproc->iotime);
 
   if(curproc == initproc)
     panic("init exiting");
@@ -726,8 +726,8 @@ scheduler(void)
       struct proc* el;
       for (int i = 0; i <= qpos[q]; i++){
         el = mlfq[q][i];
-        if (ticks - el->q_start > 30){  // Promote
-          // cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
+        if (ticks - el->q_start > 25){  // Promote
+          cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
           // move_q(el->q, el->q-1, el);
 #ifdef PLOT
           cprintf("\nPLOT %d %d %d\n", el->pid, el->q, ticks);
