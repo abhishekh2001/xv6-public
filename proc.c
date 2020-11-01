@@ -439,7 +439,7 @@ exit(void)
   struct proc *p;
   int fd;
 
-  // cprintf("pid %d exiting wtime=%d\n", curproc->pid, curproc->iotime);
+  // cprintf("pid %d exiting with wtime %d\n", curproc->pid, curproc->w_time);
 
   if(curproc == initproc)
     panic("init exiting");
@@ -476,6 +476,8 @@ exit(void)
 
   // Update exit time of proc
   curproc->etime = ticks;
+  // cprintf("pid %d total time =%d\n", curproc->pid, curproc->etime - curproc->ctime - curproc->rtime);
+
   sched();
   panic("zombie exit");
 }
@@ -552,11 +554,12 @@ waitx(int* wtime, int* rtime)
 
         /* update param fields */
         *rtime = p->rtime;
-        *wtime = p->etime - p->rtime - p->ctime - p->iotime;
+        // *wtime = p->etime - p->rtime - p->ctime - p->iotime;
         // *wtime = p->iotime;
+        *wtime = p->w_time;
 
-        cprintf("etime %d, rtime %d, ctime %d, iotime %d\n",
-          p->etime, p->rtime, p->ctime, p->iotime);
+        // cprintf("etime %d, rtime %d, ctime %d, iotime %d\n",
+        //   p->etime, p->rtime, p->ctime, p->iotime);
 
         kfree(p->kstack);
         p->kstack = 0;
@@ -737,7 +740,7 @@ scheduler(void)
       struct proc* el;
       for (int i = 0; i <= qpos[q]; i++){
         el = mlfq[q][i];
-        if (ticks - el->q_start > 20){  // Promote
+        if (ticks - el->q_start > 25){  // Promote
           // cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
           // move_q(el->q, el->q-1, el);
 #ifdef PLOT
