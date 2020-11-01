@@ -53,7 +53,7 @@ struct proc {
   int ctime;                   // Creation time
   int etime;                   // End time
   int rtime;                   // Run time
-  int iotime;                  // Time in IO
+  int iotime;                  // Time in sleeping
 
   int priority;                // Scheduling
   int n_run;                   // # of sched pick ups
@@ -63,6 +63,9 @@ struct proc {
   int q_flag;                  // Shift queue
   int q_start;                 // Tick when proc enters mlfq queue
   int time_in_q[5];            // Ticks spent in each queue
+  int last_rbl;                // Currently waiting for CPU
+  int w_time;                  // Total waiting time
+  int curr_wtime;              // Currently waiting for cpu
 };
 
 // Process memory is laid out contiguously, low addresses first:

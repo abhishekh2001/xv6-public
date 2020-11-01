@@ -273,6 +273,8 @@ found:
   p->rtime = 0;      // Default
   p->etime = 0;      // Default
   p->iotime = 0;
+  p->last_rbl = 0;
+  p->w_time = 0;
 
   p->n_run = 0;
   p->priority = -1;
@@ -345,6 +347,7 @@ userinit(void)
   acquire(&ptable.lock);
 
   p->state = RUNNABLE;
+  p->last_rbl = ticks;
 
 #ifdef MLFQ
   enqueue(0, p);
@@ -415,6 +418,7 @@ fork(void)
   acquire(&ptable.lock);
 
   np->state = RUNNABLE;
+  np->last_rbl = ticks;
 
 #ifdef MLFQ
   enqueue(0, np);
@@ -549,7 +553,7 @@ waitx(int* wtime, int* rtime)
         /* update param fields */
         *rtime = p->rtime;
         *wtime = p->etime - p->rtime - p->ctime - p->iotime;
-        *wtime = p->iotime;
+        // *wtime = p->iotime;
 
         cprintf("etime %d, rtime %d, ctime %d, iotime %d\n",
           p->etime, p->rtime, p->ctime, p->iotime);
@@ -703,6 +707,9 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      // cprintf("Proc %d picked at %d, wait since %d for iotime=%d\n", p->pid,
+      //   p->last_rbl, p->iotime);
+      // p->iotime += ticks - p->last_rbl;
       p->n_run++;
       c->proc = p;
       switchuvm(p);
@@ -716,6 +723,10 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+
+      if (p->state == RUNNABLE){
+        p->last_rbl = ticks;
+      }
     }
 #endif
 
@@ -726,8 +737,8 @@ scheduler(void)
       struct proc* el;
       for (int i = 0; i <= qpos[q]; i++){
         el = mlfq[q][i];
-        if (ticks - el->q_start > 25){  // Promote
-          cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
+        if (ticks - el->q_start > 20){  // Promote
+          // cprintf("PROMOTE PID(%d) from %d to %d\n", el->pid, el->q, el->q-1);
           // move_q(el->q, el->q-1, el);
 #ifdef PLOT
           cprintf("\nPLOT %d %d %d\n", el->pid, el->q, ticks);
@@ -751,6 +762,8 @@ scheduler(void)
     // exec
     if (p != 0 && p->state == RUNNABLE){
       // cprintf("Picked %d\n", p->pid);
+
+      // p->iotime += ticks - p->last_rbl;
       p->q_time++;
       p->n_run++;
       c->proc = p;
@@ -774,6 +787,7 @@ scheduler(void)
           // cprintf("proc %d moved to queue %d\n", p->pid, newq);
         }
         p->q_time = 0;
+        p->last_rbl = ticks;
         enqueue(newq, p);
       }
     }
@@ -815,6 +829,7 @@ yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
   myproc()->state = RUNNABLE;
+  myproc()->last_rbl = ticks;
   sched();
   release(&ptable.lock);
 }
@@ -890,6 +905,7 @@ wakeup1(void *chan)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
+      p->last_rbl = 0;
 #ifdef MLFQ
       p->q_time = 0;
       enqueue(p->q, p);
@@ -921,6 +937,7 @@ kill(int pid)
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
         p->state = RUNNABLE;
+        p->last_rbl = ticks;
 #ifdef MLFQ
         enqueue(p->q, p);
 #endif
@@ -977,7 +994,7 @@ ps(void)
 
   struct proc *p;
   sti();
-  int c_ticks = ticks;
+  // int c_ticks = ticks;
   cprintf("pid\tPriority\tState\tr_time\tw_time\tn_run\tcur_q\tq0\tq1\tq2\tq3\tq4\n");
 
   acquire(&ptable.lock);
@@ -992,9 +1009,17 @@ ps(void)
       [RUNNING]   "run   ",
       [ZOMBIE]    "zombie"
     };
+    int wtime = 0;
+#ifdef MLFQ
+    wtime = ticks - p->q_start;
+#else
+    wtime = ticks - p->last_rbl;
+#endif
+    if (p->state == RUNNING)
+      wtime = 0;
     cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
       p->pid, p->priority, states[p->state], p->rtime,
-      c_ticks-p->rtime-p->ctime, p->n_run, p->q,
+      wtime, p->n_run, p->q,
       p->time_in_q[0], p->time_in_q[1], p->time_in_q[2],
       p->time_in_q[3], p->time_in_q[4]);
   }
@@ -1008,8 +1033,11 @@ inc_iotime()
 {
   struct proc* p;
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if (p->state == RUNNABLE)
+    if (p->state == SLEEPING)
       p->iotime++;
+    if (p->state == RUNNABLE){
+      p->w_time++;
+    }
   }
   return 0;
 }

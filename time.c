@@ -21,13 +21,13 @@ int main(int argc, char** argv)
         exit();
       }
     } else {
-      printf(1, "pid %d\n", getpid());
-      int p;
-      for (int i = 0; i < 1000000; i++)
-        for (int l = 0; l < 10000000; l++)
-            p = p ^ 1;
+      // printf(1, "pid %d\n", getpid());
+      // int p;
+      // for (int i = 0; i < 1000000; i++)
+      //   for (int l = 0; l < 10000000; l++)
+      //       p = p ^ 1;
       sleep(200);
-      ps();
+      // ps();
     }
     exit();
   } else {
