@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
       volatile int i;
       for (volatile int k = 0; k < number_of_processes; k++)
       {
+        // sleep(10);
         if (k <= j)
         {
           sleep(200); //io time
@@ -38,12 +39,12 @@ int main(int argc, char *argv[])
         }
       }
       printf(1, "Process: %d Finished\n", j);
-      // ps();
+      ps();
       exit();
     }
     else{
         ;
-      set_priority(100-(20+j),pid); // will only matter for PBS, comment it out if not implemented yet (better priorty for more IO intensive jobs)
+      // set_priority(100-(20+j),pid); // will only matter for PBS, comment it out if not implemented yet (better priorty for more IO intensive jobs)
     }
   }
   for (j = 0; j < number_of_processes+5; j++)

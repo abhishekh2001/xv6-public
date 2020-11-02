@@ -476,7 +476,8 @@ exit(void)
 
   // Update exit time of proc
   curproc->etime = ticks;
-  // cprintf("pid %d total time =%d\n", curproc->pid, curproc->etime - curproc->ctime - curproc->rtime);
+  // cprintf("pid %d total time =%d\n", curproc->pid,
+  //   curproc->etime - curproc->ctime - curproc->rtime);
 
   sched();
   panic("zombie exit");
@@ -717,6 +718,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->curr_wtime = 0;
 
       // cprintf("picked pid %d, ctime %d\n", p->pid, p->ctime);
 
@@ -772,6 +774,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->curr_wtime = 0;
       // cprintf("picked pid %d, ctime %d\n", p->pid, p->ctime);
 
       swtch(&(c->scheduler), p->context);
@@ -790,6 +793,7 @@ scheduler(void)
           // cprintf("proc %d moved to queue %d\n", p->pid, newq);
         }
         p->q_time = 0;
+        // p->curr_wtime = 0;
         p->last_rbl = ticks;
         enqueue(newq, p);
       }
@@ -908,6 +912,7 @@ wakeup1(void *chan)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
+      // p->curr_wtime = 0;
       p->last_rbl = 0;
 #ifdef MLFQ
       p->q_time = 0;
@@ -941,6 +946,7 @@ kill(int pid)
       if(p->state == SLEEPING){
         p->state = RUNNABLE;
         p->last_rbl = ticks;
+        // p->curr_wtime = 0;
 #ifdef MLFQ
         enqueue(p->q, p);
 #endif
@@ -1016,11 +1022,11 @@ ps(void)
 #ifdef MLFQ
     wtime = ticks - p->q_start;
 #else
-    wtime = ticks - p->last_rbl;
+    wtime = p->curr_wtime;
 #endif
-    if (p->state == RUNNING)
-      wtime = 0;
-    cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+    // if (p->state == RUNNING)
+    //   wtime = 0;
+    cprintf("%d\t%d\t\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t\n",
       p->pid, p->priority, states[p->state], p->rtime,
       wtime, p->n_run, p->q,
       p->time_in_q[0], p->time_in_q[1], p->time_in_q[2],
@@ -1040,6 +1046,10 @@ inc_iotime()
       p->iotime++;
     if (p->state == RUNNABLE){
       p->w_time++;
+      p->curr_wtime++;
+    }
+    if (p->state == RUNNING){
+      p->rtime++;
     }
   }
   return 0;
